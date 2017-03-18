@@ -1,0 +1,449 @@
+let arrayglobal,arrayblank = [];
+let time;
+let started=1;
+class Cell extends React.Component {
+   invent() {
+      this.props.update(this)
+   }
+   render() {
+      const alive = this.props.alive == true ? "#3366CC" : "#f8f8ff";
+      return (<td onClick={()=>this.invent()} className="cell text-center" style={{background: alive}}></td>)
+   }
+}
+class Body extends React.Component {
+   constructor(props) {
+         super(props);
+         this.state = {
+            rows: 40,
+            columns: 40,
+            grid: [],
+            time: 200,
+            run: true,
+            generations: 0
+         }
+      }
+   componentDidMount() {
+      time = setInterval(() => this.nextState(), this.state.time);
+   }
+   componentWillMount() {
+         let local = [];
+         for (var x = 0; x < this.state.rows; x++) {    
+            for (var y = 0; y < this.state.columns; y++) {
+               const locale = Math.floor(Math.random() * 3);
+               if (locale > 1) {
+                  local.push(x + ":" + y + ":" + "1");
+               } else {
+                  local.push(x + ":" + y + ":" + "0");
+               }
+            }
+
+         }
+         arrayglobal = local;
+         this.updateState();
+      }
+      //row={(item.split(":"))[0]} col={(item.split(":"))[1]}
+   updateState() {
+      this.setState({
+         grid: arrayglobal
+      })
+   }
+   toggle(i) {
+      const qwe = arrayglobal[i].split(":");
+      const needed = qwe[2];
+      if (needed == "1") {
+         arrayglobal[i] = qwe[0] + ":" + qwe[1] + ":0";
+         this.updateState();
+      } else {
+         arrayglobal[i] = qwe[0] + ":" + qwe[1] + ":1";
+         this.updateState();
+      }
+   }
+   log() {
+      console.log(this.state.grid);
+   }
+   setTime(n) {
+      if (this.state.run == true) {
+         clearInterval(time);
+         this.setState({
+            time: n
+         })
+         time = setInterval(() => this.nextState(), this.state.time);
+
+      } 
+      else {
+         this.setState({
+            time: n
+         })
+      }
+      
+   }
+   togglerun() {
+      if (this.state.run == true) {
+         clearInterval(time);
+         this.setState({
+            run: !this.state.run
+         })
+         started=0;
+      } else {
+         time = setInterval(() => this.nextState(), this.state.time);
+         this.setState({
+            run: !this.state.run
+         })
+         started=1;
+      }
+   }
+   nextState() {
+      const dj = arrayglobal;
+      const arrayshadow = dj;
+      const nextarray = [];
+      Object.freeze(arrayglobal);
+      for (let i = 0; i < arrayshadow.length; i++) {
+         let position = '';
+         let nbors = 0;
+         if (arrayshadow[i].split(":")[0] == "0" && arrayshadow[i].split(":")[1] == "0") {
+            position = "top left";
+         } else if (arrayshadow[i].split(":")[0] == "0" && arrayshadow[i].split(":")[1] == "39") {
+            position = "top right";
+         } else if (arrayshadow[i].split(":")[0] == "39" && arrayshadow[i].split(":")[1] == "0") {
+            position = "down left";
+         } else if (arrayshadow[i].split(":")[0] == "39" && arrayshadow[i].split(":")[1] == "39") {
+            position = "down right";
+         } else if (arrayshadow[i].split(":")[1] == "0") {
+            position = "left"
+         } else if (arrayshadow[i].split(":")[1] == "39") {
+            position = "right"
+         } else if (arrayshadow[i].split(":")[0] == "0") {
+            position = "top"
+         } else if (arrayshadow[i].split(":")[0] == "39") {
+            position = "bottom"
+         } else {
+            position = "center"
+         }
+
+         switch (position) {
+            case "center":
+               if (arrayshadow[i + 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "top left":
+               if (arrayshadow[40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[79].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1599].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1560].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1561].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "top right":
+               if (arrayshadow[38].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[79].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[0].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1599].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1598].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[78].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1560].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "down left":
+               if (arrayshadow[0].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1599].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1561].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1559].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1520].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1521].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "down right":
+               if (arrayshadow[1558].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1559].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1520].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1598].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[1560].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[38].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[0].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "left":
+               if (arrayshadow[i + 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 79].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "right":
+               if (arrayshadow[i + 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 79].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "top":
+               if (arrayshadow[i + 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1560].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1559].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1561].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+            case "bottom":
+               if (arrayshadow[i - 40].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 41].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 39].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i + 1].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1560].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1559].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               if (arrayshadow[i - 1561].split(":")[2] == "1") {
+                  nbors += 1;
+               }
+               break;
+         }
+
+         if (arrayshadow[i].split(":")[2] == "1") {
+            if (nbors >= 2 && nbors <= 3) {
+               nextarray[i] = arrayshadow[i].split(":")[0] + ":" + arrayshadow[i].split(":")[1] + ":" + arrayshadow[i].split(":")[2];
+            } else {
+               nextarray[i] = arrayshadow[i].split(":")[0] + ":" + arrayshadow[i].split(":")[1] + ":0";
+            }
+         } else {
+            if (nbors == 3) {
+               nextarray[i] = arrayshadow[i].split(":")[0] + ":" + arrayshadow[i].split(":")[1] + ":1";
+            } else {
+               nextarray[i] = arrayshadow[i].split(":")[0] + ":" + arrayshadow[i].split(":")[1] + ":0";
+            }
+         }
+      }
+      arrayglobal = nextarray;
+      this.setState({
+         generations: this.state.generations + 1
+      })
+      this.updateState();
+
+   }
+   knockdown() {
+      started=0;
+      arrayblank=[];
+      clearInterval(time);
+      let local = [];
+         for (var x = 0; x < this.state.rows; x++) {    
+            for (var y = 0; y < this.state.columns; y++) {
+               const locale = Math.floor(Math.random() * 2);
+               if (locale > 1) {
+                  local.push(x + ":" + y + ":" + "1");
+               } else {
+                  local.push(x + ":" + y + ":" + "0");
+               }
+            }
+
+         }
+         arrayglobal = local;
+         this.updateState();
+      this.setState({
+         generations: 0,
+         run: false
+      })
+      this.updateState();
+   }
+   randomboard() {
+         this.setState({
+            run: false,
+            generations: 0
+         })
+         this.knockdown();
+         clearInterval(time); 
+         let local = [];
+         for (var x = 0; x < this.state.rows; x++) {    
+            for (var y = 0; y < this.state.columns; y++) {
+               const locale = Math.floor(Math.random() * 3);
+               if (locale > 1) {
+                  local.push(x + ":" + y + ":" + "1");
+               } else {
+                  local.push(x + ":" + y + ":" + "0");
+               }
+            }
+
+         }
+         
+         arrayglobal = local;
+         this.updateState();
+    }    
+   render() {
+      const table = this.state.grid.map((item, i) => {
+         const localneed = item.split(":")[2] == "1" ? true : false;
+         return <Cell alive={localneed} update={()=>this.toggle(i)}/>
+      }, this)
+      return (<div><div className="row text-center" id="title">Conway's Game of Life by <a href="https://www.github.com/zooll8" target="_blank">Zooll</a><br/><a href="https://github.com/zooll8/game-of-life" target="_blank">See source code</a></div>
+         <div className="board">
+            {table}
+            </div>
+            <div className="row text-center" id="up"><strong>Generations: {this.state.generations}</strong></div><br/>
+            <div className="row text-center">
+               <button className="btn btn-default" onClick={()=>this.togglerun()}>{this.state.run?"Pause":"Run"}</button>  <div className="btn-group"><button className="btn btn-info" onClick={()=>this.setTime(400)}>Slow</button>  <button className="btn btn-primary" onClick={()=>this.setTime(130)}>Medium</button>  <button className="btn btn-danger" onClick={()=>this.setTime(30)}>Lightning</button></div>    <button className="btn btn-success" onClick={()=>this.randomboard()}>Seed</button> <button className="btn btn-warning" onClick={()=>this.knockdown()}>Clear</button>
+            </div>
+      </div>)
+
+   }
+}
+
+ReactDOM.render(
+   <Body />,
+   document.querySelector("#root")
+)
